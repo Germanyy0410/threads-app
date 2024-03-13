@@ -21,7 +21,7 @@ const Topbar = () => {
                   alt="logout"
                   width={24}
                   height={24}
-                ></Image>
+                />
               </div>
             </SignOutButton>
           </SignedIn>
@@ -34,7 +34,7 @@ const Topbar = () => {
               organizationSwitcherTrigger: "py-2 px-4",
             },
           }}
-        ></OrganizationSwitcher>
+        />
       </div>
     </nav>
   );

@@ -37,7 +37,7 @@ const LeftSideBar = () => {
           );
         })}
       </div>
-
+        
       <div className="mt-10 px-6">
         <SignedIn>
           <SignOutButton signOutCallback={() => router.push("/sign-in")}>
