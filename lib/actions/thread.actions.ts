@@ -13,7 +13,12 @@ interface Params {
   path: string;
 }
 
-export async function createThread({text, author, communityId, path}: Params) {
+export async function createThread({
+  text,
+  author,
+  communityId,
+  path,
+}: Params) {
   try {
     connectToDB();
 
@@ -32,4 +37,38 @@ export async function createThread({text, author, communityId, path}: Params) {
   } catch (error: any) {
     throw new Error(`Error creating thread: ${error.message}`);
   }
+}
+
+export async function fetchPosts(pageNumber = 1, pageSize = 20) {
+  connectToDB();
+
+  // Calculate number of posts to skip
+  const skipAmount = (pageNumber - 1) * pageSize;
+
+  // Fetch the posts that have no parents (top-level posts)
+  const postQuery = Thread.find({ parentId: { $in: [null, undefined] } })
+    .sort({
+      createdAt: "desc",
+    })
+    .skip(skipAmount)
+    .limit(pageSize)
+    .populate({ path: "author", model: User })
+    .populate({
+      path: "children",
+      populate: {
+        path: "author",
+        model: User,
+        select: "_id name parentId image",
+      },
+    });
+
+  const totalPosts = await Thread.countDocuments({
+    parentId: { $in: [null, undefined] },
+  });
+
+  const posts = await postQuery.exec();
+
+  const isNext = totalPosts > skipAmount + posts.length;
+
+  return { posts, isNext };
 }
